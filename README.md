@@ -42,7 +42,7 @@
 
 以下のURLからインタラクティブな資料をご覧いただけます。
 
-[ここにGitHub Pagesで公開されるURLを記載します]
+https://tomsan-7.github.io/mdsystem-presentation/
 
 ---
 
