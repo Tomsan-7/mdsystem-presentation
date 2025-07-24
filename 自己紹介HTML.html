@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自己紹介プレゼンテーション</title>
+    <!-- Tailwind CSSを読み込むための設定です。これにより、デザインのスタイルを簡単に適用できます。 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.jsを読み込むための設定です。これにより、レーダーチャートのようなグラフを描画できます。 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Webフォント（InterとNoto Sans JP）を読み込むための設定です。これにより、文字のデザインを整えます。 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ここから下のコメントは、このWebサイト全体の構成やデザインの考え方をまとめたものです。 -->
+    <!-- Chosen Palette: Professional Calm -->
+    <!-- Application Structure Plan: このSPAは、面接官が候補者の全体像を直感的に把握できるよう、垂直スクロール型のポートフォリオとして設計しました。上部のナビゲーションで主要セクション（現状・理想・課題と対策）に即座にアクセス可能です。「現状」ではスキルをレーダーチャートで視覚化し、「課題と対策」では課題と解決策を隣接配置することで、論理的な問題解決能力を示します。この構造は、静的なスライドよりもダイナミックで記憶に残りやすく、候補者の強みを効果的に伝えるために選択されました。 -->
+    <!-- Visualization & Content Choices: 
+        - AsIs（スキル） -> Goal: 自身のスキルセットを多角的に示す -> Viz: レーダーチャート -> Interaction: ホバーで詳細ツールチップ表示 -> Justification: 各スキルのバランスと習熟度を一目で比較でき、静的なリストより印象的 -> Library: Chart.js
+        - AsIs（経歴・経験） -> Goal: 職務経験の幅広さと本質的な強みを伝える -> Viz: アイコン付きカード -> Interaction: ホバーで浮き上がる効果 -> Justification: 情報を整理し、視覚的な区切りをつけることで可読性を向上 -> Method: HTML/Tailwind
+        - 課題と対策 -> Goal: 課題認識力と解決への行動計画を明確に関連付ける -> Viz: 2カラムレイアウト -> Interaction: なし（静的表示） -> Justification: 課題とその対策を直接対比させることで、論理的思考と計画性を強調 -> Method: HTML/Tailwind Grid
+        - 全体 -> Goal: プロフェッショナルでクリーンな印象を与える -> Viz: アイコン（Unicode）、余白を活かしたレイアウト -> Interaction: スムーズスクロール -> Justification: ユーザー体験を向上させ、洗練されたプレゼンテーションを演出 -> Method: CSS/JS
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    
+    <!-- ここから下のスタイルシート（CSS）は、Webサイトの見た目を整えるための設定です。 -->
+    <style>
+        /* body全体のフォントと背景色を設定しています。見やすさを重視しました。 */
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa; /* 背景色を淡いグレーに設定 */
+        }
+        /* ナビゲーションリンク（ページ上部のメニュー）のマウスオーバー時のアニメーションを設定しています。 */
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s; /* 色と下線の変化を0.3秒かけて滑らかにします */
+            border-bottom: 2px solid transparent; /* 最初は透明な下線（2ピクセル幅）を設定 */
+        }
+        /* ナビゲーションリンクにマウスが乗った時や、現在表示中のセクションのリンクの色と下線を変更します。 */
+        .nav-link:hover, .nav-link.active {
+            color: #1e40af; /* リンクの色を濃い青に */
+            border-bottom-color: #1e40af; /* 下線の色も濃い青に */
+        }
+        /* レーダーチャートが表示される領域のサイズと位置を調整しています。 */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* 最大幅を500ピクセルに制限 */
+            margin-left: auto;
+            margin-right: auto; /* 中央揃えにするための設定 */
+            height: 350px; /* 高さを350ピクセルに設定 */
+        }
+        /* 画面幅が768ピクセル以上のタブレット・PCでは、チャートの高さを400ピクセルに広げます。 */
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- ここからWebサイトのヘッダー部分です。ページの上部に固定されるメニューやタイトルが入ります。 -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- ページのメインタイトルです。 -->
+                <h1 class="text-xl md:text-2xl font-bold text-blue-900">私のキャリアビジョンとエムディシステムでの貢献</h1>
+                <!-- PC画面用のナビゲーションメニューです。各セクションへのリンクが含まれます。 -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#as-is" class="nav-link font-medium text-gray-600 pb-1">現状 - As Is</a>
+                    <a href="#to-be" class="nav-link font-medium text-gray-600 pb-1">理想 - To Be</a>
+                    <a href="#gap-bridge" class="nav-link font-medium text-gray-600 pb-1">課題と対策</a>
+                </nav>
+                <!-- スマートフォン画面用のナビゲーションメニューです。（プルダウン形式） -->
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="#as-is">現状 - As Is</option>
+                        <option value="#to-be">理想 - To Be</option>
+                        <option value="#gap-bridge">課題と対策</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ここからWebサイトの主要コンテンツ部分です。各セクションが入ります。 -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <!-- 「現状 - As Is」セクションです。現在のスキルと強みを説明します。 -->
+        <section id="as-is" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-blue-900">現状 - As Is</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                ここでは、私の現在地、つまりこれまでの経験を通じて培ってきたスキルと強みについてご説明します。これらが、今後のキャリアを築く上での強固な土台となっています。
+            </p>
+
+            <!-- スキルと強みの表示エリアです。2カラムで表示されます。 -->
+            <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- 左側のスキルチャート表示エリアです。 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
+                    <h3 class="text-xl font-bold mb-4 text-center">保有スキル・ツール習熟度</h3>
+                    <!-- ここにレーダーチャートが表示されます。JavaScriptでデータが設定されます。 -->
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 右側の強み（問題解決能力など）のリスト表示エリアです。 -->
+                <div class="space-y-6">
+                    <!-- 問題解決能力の項目 -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
+                        <h4 class="font-bold text-lg mb-2 text-blue-800">💡 問題解決能力・業務改善経験</h4>
+                        <p class="text-gray-700">業務改善（例: Excelマクロによる作業時間短縮）やデータベース構築の経験を通じて、課題発見から解決までのプロセスを実践してきました。</p>
+                    </div>
+                    <!-- 学習意欲・適応力の項目 -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
+                        <h4 class="font-bold text-lg mb-2 text-blue-800">🧠 学習意欲・適応力</h4>
+                        <p class="text-gray-700">実践から学び、疑問点を理論で補強する学習スタイルです。特に、AIツール（GeminiやCopilotなど）のプロンプトエンジニアリング能力を活用し、効率的に課題解決や学習を進めることができます。</p>
+                    </div>
+                    <!-- 創造的思考力の項目 -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
+                        <h4 class="font-bold text-lg mb-2 text-blue-800">🎨 創造的思考力</h4>
+                        <p class="text-gray-700">個人的な活動を通じて、複雑な物事を構造化し、新しいアイデアを生み出す創造的思考力を養ってきました。これは、システム設計や問題解決において多角的なアプローチを考える上で役立つと考えています。</p>
+                    </div>
+                    <!-- 多様な職務経歴の項目 -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
+                        <h4 class="font-bold text-lg mb-2 text-blue-800">🌐 多様な職務経歴</h4>
+                        <p class="text-gray-700">公務員、サービス業、製造業など、多岐にわたる職務経験を通じて、様々な環境への適応力と人間理解を深めてきました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 「理想 - To Be」セクションです。目指す未来像とエムディシステムでの貢献について説明します。 -->
+        <section id="to-be" class="mb-16 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-blue-900">理想 - To Be</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                次に、私が目指す未来像と、貴社でどのように貢献したいかについてお話しします。私のキャリアビジョンは、貴社の発展と深く結びついています。
+            </p>
+
+            <!-- キャリアビジョンと貢献に関する情報を2カラムで表示します。 -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- キャリアビジョンの詳細リスト -->
+                <div class="bg-white p-8 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-800">キャリアビジョン</h3>
+                    <ul class="space-y-3 list-inside text-gray-700">
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✔</span>これまでの多様な経験とITへの強い関心を活かし、システム開発の専門家としてキャリアを確立します。</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✔</span>論理的思考力と創造性を活かし、ユーザーにとって真に価値のあるシステムやサービスを生み出します。</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✔</span>チームの一員としてプロジェクトの成功に貢献し、長期的に技術力を高めていきます。</li>
+                    </ul>
+                </div>
+                <!-- エムディシステムへの貢献の詳細リスト -->
+                <div class="bg-white p-8 rounded-xl shadow-lg transition-shadow duration-300 hover:shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-800">エムディシステムへの貢献</h3>
+                    <ul class="space-y-3 list-inside text-gray-700">
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✔</span>貴社のシステム開発事業に強い魅力を感じており、情熱を持って業務に取り組みます。</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✔</span>持ち前の探求心とAIツールを活用した問題解決能力で早期に戦力となり、事業発展に貢献します。</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✔</span>課題解決への意欲と新しい技術への学習姿勢で、プロジェクトに新たな視点をもたらします。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 「課題と対策」セクションです。自身の課題と、それに対する具体的な行動計画を説明します。 -->
+        <section id="gap-bridge" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-4 text-blue-900">課題と対策</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                理想の自分になるためには、現状とのギャップを認識し、それを埋めるための具体的な行動計画が不可欠です。ここでは、私が認識している課題と、それに対する解決策をご説明します。
+            </p>
+            
+            <!-- 課題と対策の2カラムレイアウト部分です。 -->
+            <div class="bg-white p-8 rounded-xl shadow-2xl">
+                <div class="grid md:grid-cols-2 gap-x-8 lg:gap-x-12">
+                    
+                    <!-- 左側の「課題」リスト部分です。 -->
+                    <div>
+                        <h3 class="text-2xl font-bold mb-6 text-center text-red-700">課題 (目標達成の障壁)</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-red-500 pl-4">
+                                <h4 class="font-semibold">IT分野における実務経験の不足</h4>
+                                <p class="text-gray-600">VBA/GASの経験はあるものの、PythonやUnityを含め、体系的な開発経験はまだ不足しています。</p>
+                            </div>
+                            <div class="border-l-4 border-red-500 pl-4">
+                                <h4 class="font-semibold">最新技術へのキャッチアップ</h4>
+                                <p class="text-gray-600">IT業界は常に進化しており、継続的に最新知識をキャッチアップし続ける必要があります。</p>
+                            </div>
+                            <div class="border-l-4 border-red-500 pl-4">
+                                <h4 class="font-semibold">専門知識の深化</h4>
+                                <p class="text-gray-600">特定のリソースや環境下での開発経験、特定の開発言語やフレームワークにおける深い専門知識がまだ十分ではありません。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側の「対策」リスト部分です。 -->
+                    <div class="mt-8 md:mt-0">
+                        <h3 class="text-2xl font-bold mb-6 text-center text-green-700">対策 (課題解決の行動)</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-green-500 pl-4">
+                                <h4 class="font-semibold">スキルアップ計画</h4>
+                                <p class="text-gray-600">Pythonの実務レベル習得、システム開発基礎（DB、NW）の体系的学習を継続します。Unityの学習経験は、複雑なツールの習得能力として活かせると考えています。</p>
+                            </div>
+                            <div class="border-l-4 border-green-500 pl-4">
+                                <h4 class="font-semibold">効率的な学習方法</h4>
+                                <p class="text-gray-600">プロンプトエンジニアリング能力を最大限に活用し、AIツールを駆使して疑問点を即座に解決。実践的なアウトプットを通じて知識を定着させます。</p>
+                            </div>
+                            <div class="border-l-4 border-green-500 pl-4">
+                                <h4 class="font-semibold">情報収集とコミュニティ参加</h4>
+                                <p class="text-gray-600">技術ブログや専門書で常に情報をアップデートし、オンラインの技術コミュニティや勉強会にも積極的に参加し、知見を広げます。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ここからWebサイトのフッター部分です。著作権情報やAI活用に関する情報が入ります。 -->
+    <footer class="bg-blue-900 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center">
+            <p>&copy; 2025 Tom's Presentation. All rights reserved.</p>
+            <!-- 
+            本資料は、トムさんの明確な指示とディレクションのもと、AIアシスタント「ナナ」が技術的な支援（構成案・初期コード生成）を行い、トムさんが最終的な内容の精査、調整、改修を実施して完成させました。
+            これは、AIツールを効果的に活用し、短期間で高品質な成果物を生み出すトムさんの能力を示すものです。
+            制作日時：2025/07/21　最終改修日時：2025/07/23
+            -->
+        </div>
+    </footer>
+
+    <!-- ここからJavaScriptのコードです。Webサイトの動きやインタラクティブな要素を制御します。 -->
+    <script>
+        // HTMLドキュメントが完全に読み込まれた後に実行される処理を設定しています。
+        document.addEventListener('DOMContentLoaded', () => {
+            // レーダーチャートに表示するデータ（スキル名とレベル）を設定しています。
+            // スキルレベルは5段階評価で、高いほど習熟度が高いことを示します。
+            const chartData = {
+                labels: ['MS Office', 'VBA/GAS', 'Unity', 'Python', 'Dev Tools (VSCode, etc)'], // 各スキルの名前
+                datasets: [{
+                    label: 'スキルレベル',
+                    data: [4, 3, 2, 4, 4], // 各スキルの具体的なレベル値
+                    backgroundColor: 'rgba(30, 64, 175, 0.2)', // チャートの塗りつぶし色（薄い青）
+                    borderColor: 'rgba(30, 64, 175, 1)', // チャートの線の色（濃い青）
+                    pointBackgroundColor: 'rgba(30, 64, 175, 1)', // 各データ点の背景色
+                    pointBorderColor: '#fff', // 各データ点の枠線の色
+                    pointHoverBackgroundColor: '#fff', // マウスオーバー時のデータ点の背景色
+                    pointHoverBorderColor: 'rgba(30, 64, 175, 1)' // マウスオーバー時のデータ点の枠線の色
+                }]
+            };
+
+            // レーダーチャートの表示設定（オプション）を定義しています。
+            const chartConfig = {
+                type: 'radar', // チャートの種類をレーダーチャートに設定
+                data: chartData, // 上で定義したデータをチャートに適用
+                options: {
+                    responsive: true, // 画面サイズに合わせてチャートのサイズを自動調整します
+                    maintainAspectRatio: false, // アスペクト比を固定せずにサイズを自由に調整できるようにします
+                    scales: {
+                        r: { // レーダーチャートの軸（R軸）に関する設定です
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)' // 軸の線の色を薄いグレーに設定
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)' // グリッド線の色を薄いグレーに設定
+                            },
+                            pointLabels: { // 各スキル名の表示設定です
+                                font: {
+                                    size: 14, // フォントサイズ
+                                    family: "'Inter', 'Noto Sans JP', sans-serif" // フォントの種類
+                                },
+                                color: '#333' // フォントの色
+                            },
+                            ticks: { // 軸の目盛りに関する設定です
+                                beginAtZero: true, // 目盛りを0から開始
+                                max: 5, // 最大値を5に設定（スキルレベルの最大値）
+                                stepSize: 1, // 目盛りの間隔を1に設定
+                                backdropColor: 'transparent', // 目盛りの背景色を透明に
+                                color: '#666' // 目盛りの数字の色
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // 凡例（チャートの下の「スキルレベル」表示）を非表示にします
+                        },
+                        tooltip: { // マウスオーバー時に表示される情報（ツールチップ）の設定です
+                            callbacks: {
+                                label: function(context) { // ツールチップに表示されるテキストをカスタマイズします
+                                    let level;
+                                    // スキルレベルの数値（1〜5）に応じて、より分かりやすい説明文に変換します
+                                    switch(context.raw) {
+                                        case 1: level = '学習開始'; break;
+                                        case 2: level = '初心者レベル'; break;
+                                        case 3: level = '基本操作可能'; break;
+                                        case 4: level = '中級者レベル'; break;
+                                        case 5: level = '上級者レベル'; break;
+                                        default: level = '';
+                                    }
+                                    return `${context.dataset.label}: ${level} (${context.raw}/5)`; // 例: スキルレベル: 中級者レベル (4/5)
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // レーダーチャートを描画するためのキャンバス要素を取得し、チャートを生成します。
+            const skillsChartCtx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(skillsChartCtx, chartConfig);
+
+            // スマートフォン用のナビゲーション（プルダウン）が変更されたときの処理です。
+            // 選択されたセクションまでスムーズにスクロールします。
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                const targetId = e.target.value; // 選択されたセクションのIDを取得
+                document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' }); // そのセクションまでスムーズにスクロール
+            });
+            
+            // 各セクション（As Is, To Be, Gap & Bridge）とナビゲーションリンクを取得します。
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            // ページのスクロールに合わせて、現在表示されているセクションに対応するナビゲーションリンクをハイライトするための設定です。
+            const observerOptions = {
+                root: null, // ビューポート（画面全体）を監視対象とします
+                rootMargin: '0px',
+                threshold: 0.4 // セクションの40%が見えたら、表示中と判断します
+            };
+
+            // Intersection Observer（要素がビューポートに入ったかどうかを監視する機能）を作成します。
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { // もしセクションが画面内に表示されたら
+                        navLinks.forEach(link => {
+                            // 該当するナビゲーションリンクに 'active' クラスを付け外ししてハイライトします
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                        // スマートフォン用のプルダウンメニューも、現在のセクションに合わせて選択肢を変更します
+                        mobileNav.value = `#${entry.target.id}`;
+                    }
+                });
+            }, observerOptions);
+
+            // 各セクションを監視対象に設定します。
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+
+</body>
+</html>
